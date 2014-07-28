@@ -9,6 +9,7 @@ var Popup = (function(my){
   };
 
   function showPopup() {
+    updateSettings();
     updateLinkedinData();
     var content = renderContent();
     $('body').html(content);
@@ -19,11 +20,15 @@ var Popup = (function(my){
   }
 
   function updateSettings() {
-    
+    settings.apiUrl = localStorage['apiUrl'] || '';
+    settings.apiKey = localStorage['apiKey'] || '';
   }
 
   function renderContent() {
-    return linkedinData.firstname + ' ' + linkedinData.lastname;
+    var res = linkedinData.firstname + ' ' + linkedinData.lastname;
+    console.log(linkedinData);
+    console.log(settings);
+    return res;
   }
 
   return my;

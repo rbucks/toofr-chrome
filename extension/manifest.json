@@ -23,6 +23,7 @@
     "default_icon": "img/icon128.png",
     "default_title": "",
     "default_popup": "html/popup.html"
-  }
+  },
 
+  "options_page": "html/options.html"
 }

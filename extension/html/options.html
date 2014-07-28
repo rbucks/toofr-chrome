@@ -1,0 +1,58 @@
+<html>
+<head>
+    <title>Options</title>
+    <meta charset="utf-8">
+    <style type="text/css">
+    body {
+        font: 16/24px Tahoma;
+    }
+    #wrap {
+        width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #eee;
+    }
+    .text-center {
+        text-align: center
+    }
+    #wrap input {
+      margin-bottom: 10px;
+    }
+    #wrap label {
+      display: inline-block;
+      width: 70px;
+      margin-right: 10px;
+      text-align: right;
+    }
+    .comment {
+        color: #aaa;
+        //font-style: italic;
+        font-size: 75%;
+    }
+    button {
+        padding: 10px 20px;
+        font-weight: bold;
+    }
+
+    </style>
+</head>
+<body>
+
+<div id="wrap">
+    <h1>Settings</h1>
+    <hr/>
+    <div><label>API url:</label><input type="text" id="apiUrl" size="60"/> <span class="comment"></span></div>
+    <div><label>API key:</label><input type="text" id="apiKey" size="60"/> <span class="comment"></span></div>
+    <hr/>
+
+    <div class="text-center">
+        <button id="save">Save</button>
+        <button id="close">Close</button>
+        <div id="status"></div>
+    </div>
+</div>
+</body>
+
+<script src="/js/options.js"></script>
+
+</html>
