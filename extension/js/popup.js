@@ -11,8 +11,7 @@ var Popup = (function(my){
   function showPopup() {
     updateSettings();
     updateLinkedinData();
-    var content = renderContent();
-    $('body').html(content);
+    renderContent();
   }
 
   function updateLinkedinData() {
@@ -25,10 +24,43 @@ var Popup = (function(my){
   }
 
   function renderContent() {
-    var res = linkedinData.firstname + ' ' + linkedinData.lastname;
-    console.log(linkedinData);
-    console.log(settings);
-    return res;
+    var result = my.template( $.extend({}, linkedinData, settings) );
+    document.body.innerHTML = result.content;
+    // attach event listeners
+    for (var i = result.eventHandlers.length - 1; i >= 0; i--) {
+      var f = result.eventHandlers[i];
+      if (typeof f === 'function') f();
+    };
+  }
+
+  // ========================================= Template
+  my.template = function(data) {
+    var content = '',
+        inputs = ['firstname', 'lastname', 'domain'];
+    console.log(data);
+    for (var i = 0, len = inputs.length; i < len; i++) {
+      var id = inputs[i];
+      content += '<input id="' + id + '" value="' + (data[id] ? data[id] : '') + '" placeholder="' + id + '"/>';
+    }
+    content += '<div class="text-center"><button id="submitMake">Submit</button></div>';
+
+    content += '<hr/>';
+
+    content += '<input id="email" placeholder="email"/>';
+    content += '<div class="text-center"><button id="submitEmail">Submit</button></div>';
+    content += '<hr/>';
+    content += '<div id="result"></div>';
+
+    var eventHandlers = [];
+    eventHandlers.push(
+      function() {
+        $(document).ready(function(){
+          console.log('template loaded');
+        });
+      });
+
+    console.log(content);
+    return {content: content, eventHandlers: eventHandlers};
   }
 
   return my;
