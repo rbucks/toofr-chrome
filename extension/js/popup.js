@@ -59,7 +59,9 @@ var Popup = (function(my){
           var $result = $('#result');
           $result.html(msg).show();
           if (delay) {
-            $result.delay(delay).hide();
+            setTimeout(function(){
+              $result.hide();
+            }, delay);
           }
         }
 
@@ -92,7 +94,7 @@ var Popup = (function(my){
         }
 
         $('#submitMake').click( function(){
-          if (!checkAPI) return;
+          if (!checkAPI()) return;
           var url = data.apiUrl +
               '?key=' + data.apiKey + 
               '&domain=' + $('#domain').val() + 
