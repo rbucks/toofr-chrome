@@ -1,7 +1,17 @@
 body {
+  min-width: 400px;
+  max-width: 400px;
+  text-align: center;
+}
 
+input {
+  width: 70%;
 }
 
 .text-center {
   text-align: center;
+}
+
+pre {
+  text-align: left;
 }

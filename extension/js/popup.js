@@ -35,7 +35,7 @@ var Popup = (function(my){
 
   // ========================================= Template
   my.template = function(data) {
-    var content = '',
+    var content = '<hr/>',
         inputs = ['firstname', 'lastname', 'domain'];
     console.log(data);
     for (var i = 0, len = inputs.length; i < len; i++) {
@@ -53,13 +53,64 @@ var Popup = (function(my){
 
     var eventHandlers = [];
     eventHandlers.push(
+
       function() {
-        $(document).ready(function(){
-          console.log('template loaded');
+        var showResult = function(msg, delay) {
+          var $result = $('#result');
+          $result.html(msg).show();
+          if (delay) {
+            $result.delay(delay).hide();
+          }
+        }
+
+        var showLoader = function() {
+          showResult('<img src="/img/loader.gif"/>');
+        }
+
+        var checkAPI = function() {
+          if (!data.apiKey) {
+            showResult('Provide API key', 2000);
+            return false;
+          }
+          if (!data.apiUrl) {
+            showResult('Provide API url', 2000);
+            return false;
+          }
+          return true;
+        }
+
+        var sendRequest = function(url) {
+          $.ajax({
+            url: url,
+            beforeSend: showLoader,
+            dataType: 'json'
+          }).done( function(response){
+            showResult( '<pre>' + JSON.stringify(response, '', 2) + '</pre>' );
+          }).fail( function(){
+            showResult('failed');
+          });
+        }
+
+        $('#submitMake').click( function(){
+          if (!checkAPI) return;
+          var url = data.apiUrl +
+              '?key=' + data.apiKey + 
+              '&domain=' + $('#domain').val() + 
+              '&first=' + $('#firstname').val() + 
+              '&last=' + $('#lastname').val();
+          sendRequest(url);
         });
+
+        $('#submitEmail').click( function(){
+          if (!checkAPI) return;
+          var url = 'http://toofr.com/api/email_tester' + 
+              '?key=' + data.apiKey + 
+              '&email=' + $('#email').val();
+          sendRequest(url);
+        });
+
       });
 
-    console.log(content);
     return {content: content, eventHandlers: eventHandlers};
   }
 

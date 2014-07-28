@@ -25,5 +25,9 @@
     "default_popup": "html/popup.html"
   },
 
-  "options_page": "html/options.html"
+  "options_page": "html/options.html",
+
+  "permissions": [
+    "http://toofr.com/*"
+  ]
 }
