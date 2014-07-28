@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  "name": "LinkedIn - Toofr",
+  "description": "",
+  "version": "0.1",
+  "icons": {
+    "128": "img/icon128.png"
+  },
+
+  "background": {
+    "scripts": ["js/background.js"],
+    "persistent": false
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.linkedin.com/profile/*"],
+      "js": ["js/content-script.js"],
+      "run_at": "document_end"
+    }
+  ],
+
+  "browser_action": {
+    "default_icon": "img/icon128.png",
+    "default_title": "",
+    "default_popup": "html/popup.html"
+  }
+
+}
