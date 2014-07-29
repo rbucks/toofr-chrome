@@ -108,6 +108,7 @@ var Popup = (function(my){
           }
           else {
             type = 'success';
+            content = '';
             $.each(['first', 'last', 'domain', 'email'], function(i, id){
               content += '<div><span>' + id + ':</span>' + json.response[id] + '</div>';
             })
