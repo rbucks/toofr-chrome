@@ -37,7 +37,7 @@ var Popup = (function(my){
   my.template = function(data) {
     var content = '<hr/>',
         inputs = ['firstname', 'lastname', 'domain'];
-    console.log(data);
+
     for (var i = 0, len = inputs.length; i < len; i++) {
       var id = inputs[i];
       content += '<input id="' + id + '" value="' + (data[id] ? data[id] : '') + '" placeholder="' + id + '"/>';
@@ -98,14 +98,8 @@ var Popup = (function(my){
 
         var processMakeResponse = function(json) {
           var type = '',
-              content = '',
-              errorMsg = false;
-          if (!json.response) {
-            content = "Bad response";
-            type = 'error';
-          }
-          else if ((errorMsg = checkResponseErrors(json)) !== false) {
-            content = errorMsg;
+              content = '';
+          if ((content = checkResponseErrors(json)) !== false) {
             type = 'error';
           }
           else if (!json.response.email) {
@@ -122,14 +116,22 @@ var Popup = (function(my){
         }
 
         var processEmailResponse = function(json) {
-          return {type: 'success', content: 'email response'};
+          var type = '',
+              content = '';
+          if ((content = checkResponseErrors(json)) !== false) {
+            type = 'error';
+          }
+          else {
+            content = '<pre>' + JSON.stringify( json.response, '', 2) + '</pre>';
+            type = 'success';
+          }
+          return {type: type, content: content};
         }
 
         var checkResponseErrors = function(json) {
-          if (json.response && json.response.error)
-            return json.response.error;
-          else
-            return false;
+          if (!json.response) return "Bad response";
+          else if (json.response.error) return json.response.error;
+          else return false;
         }
 
         $('#submitMake').click( function(){
