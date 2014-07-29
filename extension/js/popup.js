@@ -55,8 +55,10 @@ var Popup = (function(my){
     eventHandlers.push(
 
       function() {
-        var showResult = function(msg, delay) {
+        var showResult = function(msg, className, delay) {
           var $result = $('#result');
+          $result.removeClass();
+          if (className) $result.addClass(className);
           $result.html(msg).show();
           if (delay) {
             setTimeout(function(){
@@ -66,31 +68,68 @@ var Popup = (function(my){
         }
 
         var showLoader = function() {
-          showResult('<img src="/img/loader.gif"/>');
+          showResult('<div class="text-center"><img src="/img/loader.gif"/></div>');
         }
 
         var checkAPI = function() {
           if (!data.apiKey) {
-            showResult('Provide API key', 2000);
+            showResult('Provide API key', 'error', 2000);
             return false;
           }
           if (!data.apiUrl) {
-            showResult('Provide API url', 2000);
+            showResult('Provide API url', 'error', 2000);
             return false;
           }
           return true;
         }
 
-        var sendRequest = function(url) {
+        var sendRequest = function(url, processResponse) {
           $.ajax({
             url: url,
             beforeSend: showLoader,
             dataType: 'json'
           }).done( function(response){
-            showResult( '<pre>' + JSON.stringify(response, '', 2) + '</pre>' );
+            var result = processResponse(response); 
+            showResult( result.content, result.type );
           }).fail( function(){
-            showResult('failed');
+            showResult('Network error', 'error', 2000);
           });
+        }
+
+        var processMakeResponse = function(json) {
+          var type = '',
+              content = '',
+              errorMsg = false;
+          if (!json.response) {
+            content = "Bad response";
+            type = 'error';
+          }
+          else if ((errorMsg = checkResponseErrors(json)) !== false) {
+            content = errorMsg;
+            type = 'error';
+          }
+          else if (!json.response.email) {
+            content = "Sorry, no email address found";
+            type = 'warning';
+          }
+          else {
+            type = 'success';
+            $.each(['first', 'last', 'domain', 'email'], function(i, id){
+              content += '<div><span>' + id + ':</span>' + json.response[id] + '</div>';
+            })
+          }
+          return {type: type, content: content};
+        }
+
+        var processEmailResponse = function(json) {
+          return {type: 'success', content: 'email response'};
+        }
+
+        var checkResponseErrors = function(json) {
+          if (json.response && json.response.error)
+            return json.response.error;
+          else
+            return false;
         }
 
         $('#submitMake').click( function(){
@@ -100,7 +139,7 @@ var Popup = (function(my){
               '&domain=' + $('#domain').val() + 
               '&first=' + $('#firstname').val() + 
               '&last=' + $('#lastname').val();
-          sendRequest(url);
+          sendRequest(url, processMakeResponse);
         });
 
         $('#submitEmail').click( function(){
@@ -108,7 +147,7 @@ var Popup = (function(my){
           var url = 'http://toofr.com/api/email_tester' + 
               '?key=' + data.apiKey + 
               '&email=' + $('#email').val();
-          sendRequest(url);
+          sendRequest(url, processEmailResponse);
         });
 
       });
