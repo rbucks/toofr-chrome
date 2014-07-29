@@ -35,7 +35,7 @@ var Popup = (function(my){
 
   // ========================================= Template
   my.template = function(data) {
-    var content = '<hr/>',
+    var content = '<strong>Toofr Helper</strong><hr/>',
         inputs = ['firstname', 'lastname', 'domain'];
 
     for (var i = 0, len = inputs.length; i < len; i++) {
@@ -123,8 +123,12 @@ var Popup = (function(my){
             type = 'error';
           }
           else {
-            content = '<pre>' + JSON.stringify( json.response, '', 2) + '</pre>';
+            var mx = json.response.email_tester.mx.result,
+                social = json.response.email_tester.social.result;
+            content = '<div><span>MX:</span>' + mx;
+            content += '<div><span>Socail:</span>' + social;
             type = 'success';
+            if (!mx && !social) type = 'warning';
           }
           return {type: type, content: content};
         }
