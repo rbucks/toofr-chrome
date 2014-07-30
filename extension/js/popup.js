@@ -19,7 +19,6 @@ var Popup = (function(my){
   }
 
   function updateSettings() {
-    settings.apiUrl = localStorage['apiUrl'] || '';
     settings.apiKey = localStorage['apiKey'] || '';
   }
 
@@ -38,18 +37,24 @@ var Popup = (function(my){
     var content = '<strong>Toofr Helper</strong><hr/>',
         inputs = ['firstname', 'lastname', 'domain'];
 
+    content += '<form id="submitMake">';
     for (var i = 0, len = inputs.length; i < len; i++) {
       var id = inputs[i];
       content += '<input id="' + id + '" value="' + (data[id] ? data[id] : '') + '" placeholder="' + id + '"/>';
     }
-    content += '<div class="text-center"><button id="submitMake">Submit</button></div>';
+    content += '<div class="text-center"><button type="submit">Submit</button></div>';
+    content += '</form>';
 
     content += '<hr/>';
 
+    content += '<form  id="submitEmail">';
     content += '<input id="email" placeholder="email"/>';
-    content += '<div class="text-center"><button id="submitEmail">Submit</button></div>';
+    content += '<div class="text-center"><button>Submit</button></div>';
+    content += '</form>';
+
     content += '<hr/>';
     content += '<div id="result"></div>';
+
 
     var eventHandlers = [];
     eventHandlers.push(
@@ -74,10 +79,6 @@ var Popup = (function(my){
         var checkAPI = function() {
           if (!data.apiKey) {
             showResult('Provide API key', 'error', 2000);
-            return false;
-          }
-          if (!data.apiUrl) {
-            showResult('Provide API url', 'error', 2000);
             return false;
           }
           return true;
@@ -139,9 +140,10 @@ var Popup = (function(my){
           else return false;
         }
 
-        $('#submitMake').click( function(){
+        $('#submitMake').submit( function(e){
+          e.preventDefault();
           if (!checkAPI()) return;
-          var url = data.apiUrl +
+          var url = 'http://toofr.com/api/guess' +
               '?key=' + data.apiKey + 
               '&domain=' + $('#domain').val() + 
               '&first=' + $('#firstname').val() + 
@@ -149,7 +151,8 @@ var Popup = (function(my){
           sendRequest(url, processMakeResponse);
         });
 
-        $('#submitEmail').click( function(){
+        $('#submitEmail').submit( function(e){
+          e.preventDefault();
           if (!checkAPI) return;
           var url = 'http://toofr.com/api/email_tester' + 
               '?key=' + data.apiKey + 

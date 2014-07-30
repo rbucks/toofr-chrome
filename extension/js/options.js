@@ -1,6 +1,6 @@
 (function(){
 
-var ids = ['apiUrl', 'apiKey'];
+var ids = ['apiKey'];
 
 // Save to localStorage
 function saveOptions() {
