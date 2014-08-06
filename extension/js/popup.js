@@ -43,12 +43,11 @@ var Popup = (function(my){
       var id = inputs[i];
       content += '<div class="form-group"><input id="' + id + '" value="' + (data[id] ? data[id] : '') + '" placeholder="' + id + '"/></div>';
     }
-    content += '<button type="submit" class="btn btn-default">Submit</button>';
+    content += '<button type="submit" class="btn btn-success">Submit</button>';
     content += '</form></td>';
-    content += '<td>         </td>';
-    content += '<td><form id="submitEmail">';
+    content += '<td style="padding-left:30px;"><form id="submitEmail">';
     content += '<div class="form-group"><input id="email" placeholder="email"/></div>';
-    content += '<button class="btn btn-default">Submit</button>';
+    content += '<button class="btn btn-success">Submit</button>';
     content += '</form></td>';
     content += '</tr></tbody></table></section>';
 
@@ -126,7 +125,7 @@ var Popup = (function(my){
             var mx = json.response.email_tester.mx.result,
                 social = json.response.email_tester.social.result;
             content = '<div><span>MX:</span>' + mx;
-            content += '<div><span>Socail:</span>' + social;
+            content += '<div><span>Social:</span>' + social;
             type = 'success';
             if (!mx && !social) type = 'warning';
           }
