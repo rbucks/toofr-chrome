@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "LinkedIn - Toofr",
+  "name": "Toofr Helper",
   "description": "",
-  "version": "0.3",
+  "version": "0.4",
   "icons": {
     "128": "img/icon128.png"
   },

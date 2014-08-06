@@ -34,26 +34,25 @@ var Popup = (function(my){
 
   // ========================================= Template
   my.template = function(data) {
-    var content = '<strong>Toofr Helper</strong><hr/>',
+    var content = '<div class="navbar"><div class="navbar-inner"><img src="/img/toofr_small_white.png" style="padding:6px;"/></div></div>',
         inputs = ['firstname', 'lastname', 'domain'];
 
-    content += '<form id="submitMake">';
+    content += '<section><table><tbody>';
+    content += '<tr><td><form id="submitMake">';
     for (var i = 0, len = inputs.length; i < len; i++) {
       var id = inputs[i];
-      content += '<input id="' + id + '" value="' + (data[id] ? data[id] : '') + '" placeholder="' + id + '"/>';
+      content += '<div class="form-group"><input id="' + id + '" value="' + (data[id] ? data[id] : '') + '" placeholder="' + id + '"/></div>';
     }
-    content += '<div class="text-center"><button type="submit">Submit</button></div>';
-    content += '</form>';
+    content += '<button type="submit" class="btn btn-default">Submit</button>';
+    content += '</form></td>';
+    content += '<td>         </td>';
+    content += '<td><form id="submitEmail">';
+    content += '<div class="form-group"><input id="email" placeholder="email"/></div>';
+    content += '<button class="btn btn-default">Submit</button>';
+    content += '</form></td>';
+    content += '</tr></tbody></table></section>';
 
-    content += '<hr/>';
-
-    content += '<form  id="submitEmail">';
-    content += '<input id="email" placeholder="email"/>';
-    content += '<div class="text-center"><button>Submit</button></div>';
-    content += '</form>';
-
-    content += '<hr/>';
-    content += '<div id="result"></div>';
+    content += '<section><div id="result"></div></section>';
 
 
     var eventHandlers = [];

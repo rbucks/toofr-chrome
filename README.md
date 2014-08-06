@@ -1,4 +1,4 @@
 toofr-chrome
 ============
 
-Chrome extension for Toofr API
+Chrome extension for the Toofr API
