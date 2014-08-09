@@ -102,7 +102,7 @@ var Popup = (function(my){
             type = 'alert alert-danger';
           }
           else if (!json.response.email) {
-            content = "Sorry, no email address found";
+            content = "Sorry, no email address was found.";
             type = 'alert alert-danger';
           }
           else {
