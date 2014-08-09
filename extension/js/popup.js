@@ -76,7 +76,7 @@ var Popup = (function(my){
 
         var checkAPI = function() {
           if (!data.apiKey) {
-            showResult('Provide API key', 'alert alert-danger', false);
+            showResult('<p><strong>Please add your Toofr API key.</strong></p><p>Find it by logging into Toofr and going to http://toofr.com/api, and then save it in the Chrome extension options.</p>', 'alert alert-info', false);
             return false;
           }
           return true;
@@ -91,7 +91,7 @@ var Popup = (function(my){
             var result = processResponse(response); 
             showResult( result.content, result.type );
           }).fail( function(){
-            showResult('Network error', 'alert alert-danger', 2000);
+            showResult('Network error', 'alert alert-info', 2000);
           });
         }
 
@@ -99,17 +99,17 @@ var Popup = (function(my){
           var type = '',
               content = '';
           if ((content = checkResponseErrors(json)) !== false) {
-            type = 'error';
+            type = 'alert alert-danger';
           }
           else if (!json.response.email) {
             content = "Sorry, no email address found";
-            type = 'warning';
+            type = 'alert alert-danger';
           }
           else {
-            type = 'success';
+            type = 'alert alert-success';
             content = '';
             $.each(['first', 'last', 'domain', 'email'], function(i, id){
-              content += '<div class="alert alert-success"><span>' + id + ':</span>' + json.response[id] + '</div>';
+              content += '<div><span>' + id + ':</span>' + json.response[id] + '</div>';
             })
           }
           return {type: type, content: content};
@@ -119,15 +119,15 @@ var Popup = (function(my){
           var type = '',
               content = '';
           if ((content = checkResponseErrors(json)) !== false) {
-            type = 'error';
+            type = 'alert alert-danger';
           }
           else {
             var mx = json.response.email_tester.mx.result,
                 social = json.response.email_tester.social.result;
-            content = '<div class="alert alert-success"><span>MX:</span>' + mx;
-            content += '<div class="alert alert-success"><span>Social:</span>' + social;
-            type = 'success';
-            if (!mx && !social) type = 'warning';
+            content = '<div><span>MX:</span>' + mx;
+            content += '<div><span>Social:</span>' + social;
+            type = 'alert alert-success';
+            if (!mx && !social) type = 'alert alert-danger';
           }
           return {type: type, content: content};
         }
