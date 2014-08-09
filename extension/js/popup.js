@@ -76,7 +76,7 @@ var Popup = (function(my){
 
         var checkAPI = function() {
           if (!data.apiKey) {
-            showResult('Provide API key', 'error', 2000);
+            showResult('Provide API key', 'alert alert-danger', false);
             return false;
           }
           return true;
@@ -91,7 +91,7 @@ var Popup = (function(my){
             var result = processResponse(response); 
             showResult( result.content, result.type );
           }).fail( function(){
-            showResult('Network error', 'error', 2000);
+            showResult('Network error', 'alert alert-danger', 2000);
           });
         }
 
@@ -109,7 +109,7 @@ var Popup = (function(my){
             type = 'success';
             content = '';
             $.each(['first', 'last', 'domain', 'email'], function(i, id){
-              content += '<div><span>' + id + ':</span>' + json.response[id] + '</div>';
+              content += '<div class="alert alert-success"><span>' + id + ':</span>' + json.response[id] + '</div>';
             })
           }
           return {type: type, content: content};
@@ -124,8 +124,8 @@ var Popup = (function(my){
           else {
             var mx = json.response.email_tester.mx.result,
                 social = json.response.email_tester.social.result;
-            content = '<div><span>MX:</span>' + mx;
-            content += '<div><span>Social:</span>' + social;
+            content = '<div class="alert alert-success"><span>MX:</span>' + mx;
+            content += '<div class="alert alert-success"><span>Social:</span>' + social;
             type = 'success';
             if (!mx && !social) type = 'warning';
           }
