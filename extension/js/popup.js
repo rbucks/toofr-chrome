@@ -125,7 +125,7 @@ var Popup = (function(my){
             var confidence = json.response.confidence,
             content = '<div><span>Confidence:</span>' + confidence + '</div>';
             type = 'alert alert-success';
-            if (!mx && !social) type = 'alert alert-danger';
+            if (!confidence) type = 'alert alert-danger';
           }
           return {type: type, content: content};
         }
