@@ -1,8 +1,9 @@
 {
   "manifest_version": 2,
   "name": "Toofr Helper",
+  "short_name": "Toofr Helper",
   "description": "",
-  "version": "0.4",
+  "version": "0.6",
   "icons": {
     "128": "img/icon128.png"
   },

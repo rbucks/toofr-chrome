@@ -108,8 +108,8 @@ var Popup = (function(my){
           else {
             type = 'alert alert-success';
             content = '';
-            $.each(['first', 'last', 'domain', 'email'], function(i, id){
-              content += '<div><span>' + id + ':</span>' + json.response[id] + '</div>';
+            $.each(['first', 'last', 'domain', 'email', 'confidence'], function(i, id){
+              content += '<div><span>' + id + ':</span>' + '<a href="mailto:' + json.response[id] +'">' + json.response[id] + '</a></div>';
             })
           }
           return {type: type, content: content};
@@ -122,10 +122,8 @@ var Popup = (function(my){
             type = 'alert alert-danger';
           }
           else {
-            var mx = json.response.email_tester.mx.result,
-                social = json.response.email_tester.social.result;
-            content = '<div><span>MX:</span>' + mx;
-            content += '<div><span>Social:</span>' + social;
+            var confidence = json.response.confidence,
+            content = '<div><span>Confidence:</span>' + confidence + '</div>';
             type = 'alert alert-success';
             if (!mx && !social) type = 'alert alert-danger';
           }
@@ -152,7 +150,7 @@ var Popup = (function(my){
         $('#submitEmail').submit( function(e){
           e.preventDefault();
           if (!checkAPI) return;
-          var url = 'http://toofr.com/api/email_tester' + 
+          var url = 'http://toofr.com/api/test' + 
               '?key=' + data.apiKey + 
               '&email=' + $('#email').val();
           sendRequest(url, processEmailResponse);

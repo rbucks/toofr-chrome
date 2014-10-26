@@ -34,7 +34,6 @@ td {
 }
 
 #result span {
-  width: 50px;
   display: inline-block;
   text-align: right;
   font-weight: bold;
