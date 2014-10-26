@@ -124,6 +124,8 @@ var Popup = (function(my){
           else {
             var confidence = json.response.confidence,
             content = '<div><span>Confidence:</span>' + confidence + '</div>';
+            content += '<div class="progress">';
+            content += '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="' + confidence + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + confidence + '%" "></div></div>';
             type = 'alert alert-success';
             if (!confidence) type = 'alert alert-danger';
           }
