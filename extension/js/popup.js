@@ -97,6 +97,7 @@ var Popup = (function(my){
 
         var processMakeResponse = function(json) {
           var type = '',
+              confidence = json.response.confidence,
               content = '';
           if ((content = checkResponseErrors(json)) !== false) {
             type = 'alert alert-danger';
@@ -111,6 +112,8 @@ var Popup = (function(my){
             $.each(['first', 'last', 'domain', 'email', 'confidence'], function(i, id){
               content += '<div><span>' + id + ':</span>' + '<a href="mailto:' + json.response[id] +'">' + json.response[id] + '</a></div>';
             })
+            content += '<div class="progress">';
+            content += '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="' + confidence + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + confidence + '%" "></div></div>';
           }
           return {type: type, content: content};
         }
