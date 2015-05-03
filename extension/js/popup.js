@@ -121,13 +121,8 @@ var Popup = (function(my){
 				
         var processPluginResponse = function(json) {
           var type = '';
-          if ((content = checkResponseErrors(json)) !== false) {
-            type = 'alert alert-danger';
-          }
-          else {
-            type = 'alert alert-success';
-            content = 'Check your <a href="http://toofr.com/history/plugin">plugin history</a> for this email address.';
-          }
+          type = 'alert alert-success';
+          content = 'Check your <a href="http://toofr.com/history/plugin">plugin history</a> for this email address.';
           return {type: type, content: content};
         }
 
