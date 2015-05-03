@@ -38,12 +38,13 @@ var Popup = (function(my){
         inputs = ['firstname', 'lastname', 'domain'];
 
     content += '<section><table><tbody>';
-    content += '<tr><td><form id="submitMake">';
+    content += '<tr><td><form>';
     for (var i = 0, len = inputs.length; i < len; i++) {
       var id = inputs[i];
       content += '<div class="form-group"><input id="' + id + '" value="' + (data[id] ? data[id] : '') + '" placeholder="' + id + '"/></div>';
     }
-    content += '<button type="submit" class="btn btn-success">Submit</button>';
+    content += '<button type="submit" class="btn btn-success" id="submitMake">Submit</button>';
+    content += ' <button class="btn btn-info" id="submitPlugin">Run Later</button>';
     content += '</form></td>';
     content += '<td style="padding-left:30px;"><form id="submitEmail">';
     content += '<div class="form-group"><input id="email" placeholder="email"/></div>';
@@ -76,7 +77,7 @@ var Popup = (function(my){
 
         var checkAPI = function() {
           if (!data.apiKey) {
-            showResult('<p><strong>Please add your Toofr API key.</strong></p><p>Find it by logging into Toofr and going to http://toofr.com/api, and then save it in the Chrome extension options.</p>', 'alert alert-info', false);
+            showResult('<p><strong>Please add your Toofr API key.</strong></p><p>Find it by logging into Toofr. You will see your API key in the footer of every page. Right click on the Chrome extention to get to your Options page where you add your API key.</p>', 'alert alert-info', false);
             return false;
           }
           return true;
@@ -117,6 +118,18 @@ var Popup = (function(my){
           }
           return {type: type, content: content};
         }
+				
+        var processPluginResponse = function(json) {
+          var type = '';
+          if ((content = checkResponseErrors(json)) !== false) {
+            type = 'alert alert-danger';
+          }
+          else {
+            type = 'alert alert-success';
+            content = 'Check your <a href="http://toofr.com/history/plugin">plugin history</a> for this email address.';
+          }
+          return {type: type, content: content};
+        }
 
         var processEmailResponse = function(json) {
           var type = '',
@@ -141,7 +154,7 @@ var Popup = (function(my){
           else return false;
         }
 
-        $('#submitMake').submit( function(e){
+        $('#submitMake').click( function(e){
           e.preventDefault();
           if (!checkAPI()) return;
           var url = 'http://toofr.com/api/guess' +
@@ -159,6 +172,17 @@ var Popup = (function(my){
               '?key=' + data.apiKey + 
               '&email=' + $('#email').val();
           sendRequest(url, processEmailResponse);
+        });
+
+        $('#submitPlugin').click( function(e){
+          e.preventDefault();
+          if (!checkAPI()) return;
+          var url = 'http://toofr.com/api/plugin' +
+              '?key=' + data.apiKey + 
+              '&domain=' + $('#domain').val() + 
+              '&first=' + $('#firstname').val() + 
+              '&last=' + $('#lastname').val();
+          sendRequest(url, processPluginResponse);
         });
 
       });

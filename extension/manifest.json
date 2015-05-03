@@ -2,8 +2,8 @@
   "manifest_version": 2,
   "name": "Toofr Helper",
   "short_name": "Toofr Helper",
-  "description": "",
-  "version": "0.7",
+  "description": "Another way to use Toofr",
+  "version": "0.8",
   "icons": {
     "128": "img/icon128.png"
   },
