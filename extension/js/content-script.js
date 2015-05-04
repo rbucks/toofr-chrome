@@ -2,14 +2,15 @@ var Linkedin = (function(my){
 
   my.result = {
     firstname: '',
-    lastname: ''
+    lastname: '',
+    company: ''
   }
 
   my.init = function() {
-    window.addEventListener('load', my.getName, false);
+    window.addEventListener('DOMContentLoaded', my.getData, false);
   }
 
-  my.getName = function() {
+  my.getData = function() {
     var fullname = document.querySelector(".full-name");
 
     if (!fullname) {
@@ -25,6 +26,9 @@ var Linkedin = (function(my){
     }
     my.result.firstname = matches[1];
     my.result.lastname = matches[2];
+
+    var company = document.querySelector("#overview-summary-current td li a");
+    if (company) my.result.company = company.textContent || '';
     my.sendResult();
   }
 
