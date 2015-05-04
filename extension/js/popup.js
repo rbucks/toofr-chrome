@@ -38,13 +38,13 @@ var Popup = (function(my){
         inputs = ['firstname', 'lastname', 'domain'];
 
     content += '<section><table><tbody>';
-    content += '<tr><td><form>';
+    content += '<tr><td><form id="submitName">';
     for (var i = 0, len = inputs.length; i < len; i++) {
       var id = inputs[i];
       content += '<div class="form-group"><input id="' + id + '" value="' + (data[id] ? data[id] : '') + '" placeholder="' + id + '"/></div>';
     }
-    content += '<button type="submit" class="btn btn-success" id="submitMake">Submit</button>';
-    content += ' <button class="btn btn-info" id="submitPlugin">Run Later</button>';
+    content += '<input type="button" class="btn btn-success" id="submitMake" value="Submit">';
+    content += ' <input type="submit" class="btn btn-info" id="submitPlugin" value="Run Later">';
     content += '</form></td>';
     content += '<td style="padding-left:30px;"><form id="submitEmail">';
     content += '<div class="form-group"><input id="email" placeholder="email"/></div>';
@@ -89,7 +89,7 @@ var Popup = (function(my){
             beforeSend: showLoader,
             dataType: 'json'
           }).done( function(response){
-            var result = processResponse(response); 
+            var result = processResponse(response);
             showResult( result.content, result.type );
           }).fail( function(){
             showResult('Network error', 'alert alert-info', 2000);
@@ -118,7 +118,7 @@ var Popup = (function(my){
           }
           return {type: type, content: content};
         }
-				
+
         var processPluginResponse = function(json) {
           var type = '';
           type = 'alert alert-success';
@@ -149,13 +149,24 @@ var Popup = (function(my){
           else return false;
         }
 
+        $('#submitName').submit(function(e){
+          e.preventDefault();
+          if (!checkAPI()) return;
+          var url = 'http://toofr.com/api/plugin' +
+              '?key=' + data.apiKey +
+              '&domain=' + $('#domain').val() +
+              '&first=' + $('#firstname').val() +
+              '&last=' + $('#lastname').val();
+          sendRequest(url, processPluginResponse);
+        });
+
         $('#submitMake').click( function(e){
           e.preventDefault();
           if (!checkAPI()) return;
           var url = 'http://toofr.com/api/guess' +
-              '?key=' + data.apiKey + 
-              '&domain=' + $('#domain').val() + 
-              '&first=' + $('#firstname').val() + 
+              '?key=' + data.apiKey +
+              '&domain=' + $('#domain').val() +
+              '&first=' + $('#firstname').val() +
               '&last=' + $('#lastname').val();
           sendRequest(url, processMakeResponse);
         });
@@ -163,21 +174,10 @@ var Popup = (function(my){
         $('#submitEmail').submit( function(e){
           e.preventDefault();
           if (!checkAPI) return;
-          var url = 'http://toofr.com/api/test' + 
-              '?key=' + data.apiKey + 
+          var url = 'http://toofr.com/api/test' +
+              '?key=' + data.apiKey +
               '&email=' + $('#email').val();
           sendRequest(url, processEmailResponse);
-        });
-
-        $('#submitPlugin').click( function(e){
-          e.preventDefault();
-          if (!checkAPI()) return;
-          var url = 'http://toofr.com/api/plugin' +
-              '?key=' + data.apiKey + 
-              '&domain=' + $('#domain').val() + 
-              '&first=' + $('#firstname').val() + 
-              '&last=' + $('#lastname').val();
-          sendRequest(url, processPluginResponse);
         });
 
       });
