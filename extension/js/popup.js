@@ -16,26 +16,16 @@ var Popup = (function(my){
 
   function updateLinkedinData() {
     linkedinData = bg.App.linkedinData;
-    getCompanyDomain();
+    if (!linkedinData.domain) bg.App.getCompanyDomain( linkedinData, function( domain ){
+      linkedinData.domain = domain;
+      $('#domain').val( domain );
+    });
   }
 
   function updateSettings() {
     settings.apiKey = localStorage['apiKey'] || '';
   }
 
-  function getCompanyDomain() {
-    if (!linkedinData.company) return;
-    if (!settings.apiKey) return;
-    var url = 'http://toofr.com/api/plugin' +
-        '?key=' + settings.apiKey +
-        '&domain=' + encodeURIComponent( linkedinData.company );
-    $.getJSON(url, function( json ){
-      if (json && typeof json.response === 'string') {
-        linkedinData.domain = json.response;
-        $('#domain').val( linkedinData.domain );
-      }
-    });
-  };
 
   function renderContent() {
     var result = my.template( $.extend({}, linkedinData, settings) );
