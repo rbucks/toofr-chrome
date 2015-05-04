@@ -29,8 +29,30 @@ var Linkedin = (function(my){
 
     var company = document.querySelector("#overview-summary-current td li a");
     if (company) my.result.company = company.textContent || '';
+    else {
+      my.result.company = getCurrentCompanyFromExperienceSection();
+    }
     my.sendResult();
-  }
+  };
+
+
+  var getCurrentCompanyFromExperienceSection = function(){
+    var items = document.querySelectorAll('#background-experience .section-item');
+    var company = '';
+    for (var i = 0, len = items.length; i < len; i++) {
+      var item = items[i];
+      var dates = item.querySelector('.experience-date-locale');
+      if (dates) dates = dates.textContent;
+      if (dates.match(/Present/)) {
+        company = item.querySelector('header h5 span a[href^="/company"]');
+        if (company) company = company.textContent;
+        else company = '';
+        break;
+      }
+    }
+    return company;
+  };
+
 
   my.sendResult = function() {
     console.log('Sending results...');
