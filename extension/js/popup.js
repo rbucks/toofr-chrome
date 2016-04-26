@@ -49,7 +49,6 @@ var Popup = (function(my){
       content += '<div class="form-group"><input id="' + id + '" value="' + (data[id] ? data[id] : '') + '" placeholder="' + id + '"/></div>';
     }
     content += '<input type="button" class="btn btn-success" id="submitMake" value="Submit">';
-    content += ' <input type="submit" class="btn btn-info" id="submitPlugin" value="Run Later">';
     content += '</form></td>';
     content += '<td style="padding-left:30px;"><form id="submitEmail">';
     content += '<div class="form-group"><input id="email" placeholder="email"/></div>';
@@ -77,7 +76,7 @@ var Popup = (function(my){
         }
 
         var showLoader = function() {
-          showResult('<div class="text-center"><img src="/img/loader.gif"/></div>');
+          showResult('<div class="text-center" style="width:75px"><img src="/img/bouncing.gif"/></div>');
         }
 
         var checkAPI = function() {
@@ -89,7 +88,7 @@ var Popup = (function(my){
         }
 
         var sendRequest = function(url, processResponse) {
-          $.ajax({
+          $.post({
             url: url,
             beforeSend: showLoader,
             dataType: 'json'
@@ -124,13 +123,6 @@ var Popup = (function(my){
           return {type: type, content: content};
         }
 
-        var processPluginResponse = function(json) {
-          var type = '';
-          type = 'alert alert-success';
-          content = 'Check your <a href="http://toofr.com/history/plugin">plugin history</a> for this email address.';
-          return {type: type, content: content};
-        }
-
         var processEmailResponse = function(json) {
           var type = '',
               content = '';
@@ -154,32 +146,21 @@ var Popup = (function(my){
           else return false;
         }
 
-        $('#submitName').submit(function(e){
-          e.preventDefault();
-          if (!checkAPI()) return;
-          var url = 'http://toofr.com/api/plugin' +
-              '?key=' + data.apiKey +
-              '&domain=' + $('#domain').val() +
-              '&first=' + $('#firstname').val() +
-              '&last=' + $('#lastname').val();
-          sendRequest(url, processPluginResponse);
-        });
-
         $('#submitMake').click( function(e){
           e.preventDefault();
           if (!checkAPI()) return;
-          var url = 'http://toofr.com/api/guess' +
+          var url = 'https://www.toofr.com:443/api/v1/guess_email.json' +
               '?key=' + data.apiKey +
-              '&domain=' + $('#domain').val() +
-              '&first=' + $('#firstname').val() +
-              '&last=' + $('#lastname').val();
+              '&company_name=' + $('#domain').val() +
+              '&first_name=' + $('#firstname').val() +
+              '&last_name=' + $('#lastname').val();
           sendRequest(url, processMakeResponse);
         });
 
         $('#submitEmail').submit( function(e){
           e.preventDefault();
           if (!checkAPI) return;
-          var url = 'http://toofr.com/api/test' +
+          var url = 'https://www.toofr.com:443/api/v1/test_email.json' +
               '?key=' + data.apiKey +
               '&email=' + $('#email').val();
           sendRequest(url, processEmailResponse);
