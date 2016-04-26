@@ -3,7 +3,7 @@
   "name": "Toofr Helper",
   "short_name": "Toofr Helper",
   "description": "Another way to use Toofr",
-  "version": "0.8",
+  "version": "0.9",
   "icons": {
     "128": "img/icon128.png"
   },
