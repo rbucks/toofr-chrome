@@ -16,10 +16,6 @@ var Popup = (function(my){
 
   function updateLinkedinData() {
     linkedinData = bg.App.linkedinData;
-    if (!linkedinData.domain) bg.App.getCompanyDomain( linkedinData, function( domain ){
-      linkedinData.domain = domain;
-      $('#domain').val( domain );
-    });
   }
 
   function updateSettings() {
@@ -39,7 +35,7 @@ var Popup = (function(my){
 
   // ========================================= Template
   my.template = function(data) {
-    var content = '<div class="navbar"><div class="navbar-inner"><img src="/img/toofr_small_white.png" style="padding:6px;"/></div></div>',
+    var content = '<div class="navbar navbar-default"><div class="navbar-inner"><img src="/img/toofr_small_white.png" style="padding:6px;"/></div></div>',
         inputs = ['firstname', 'lastname', 'domain'];
 
     content += '<section><table><tbody>';
@@ -76,7 +72,7 @@ var Popup = (function(my){
         }
 
         var showLoader = function() {
-          showResult('<div class="text-center" style="width:75px"><img src="/img/bouncing.gif"/></div>');
+          showResult('<div class="text-center"><img src="/img/bouncing.gif" style="width:75px"/></div>');
         }
 
         var checkAPI = function() {
@@ -88,8 +84,9 @@ var Popup = (function(my){
         }
 
         var sendRequest = function(url, processResponse) {
-          $.post({
+          $.ajax({
             url: url,
+            method: 'POST',
             beforeSend: showLoader,
             dataType: 'json'
           }).done( function(response){
@@ -101,25 +98,15 @@ var Popup = (function(my){
         }
 
         var processMakeResponse = function(json) {
-          var type = '',
-              confidence = json.response.confidence,
-              content = '';
-          if ((content = checkResponseErrors(json)) !== false) {
-            type = 'alert alert-danger';
-          }
-          else if (!json.response.email) {
-            content = "Sorry, no email address was found.";
-            type = 'alert alert-danger';
-          }
-          else {
+            first = Object.keys(json)[0];
+            confidence = json[first].confidence;
+            email = json[first].email;
             type = 'alert alert-success';
             content = '';
-            $.each(['first', 'last', 'domain', 'email', 'confidence'], function(i, id){
-              content += '<div><span>' + id + ':</span>' + '<a href="mailto:' + json.response[id] +'">' + json.response[id] + '</a></div>';
-            })
+            content += '<div><span>email: </span><a href="mailto:' + email +'">' + email + '</a></div>';
+            content += '<div><span>confidence: </span>' + confidence + '</div>';
             content += '<div class="progress">';
             content += '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="' + confidence + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + confidence + '%" "></div></div>';
-          }
           return {type: type, content: content};
         }
 
@@ -130,8 +117,9 @@ var Popup = (function(my){
             type = 'alert alert-danger';
           }
           else {
-            var confidence = json.response.confidence,
-            content = '<div><span>Confidence:</span>' + confidence + '</div>';
+            var confidence = json.confidence, email = json.email;
+            content = '<div><span>email: </span><a href="mailto:' + email +'">' + email + '</a></div>';
+            content += '<div><span>Confidence:</span>' + confidence + '</div>';
             content += '<div class="progress">';
             content += '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="' + confidence + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + confidence + '%" "></div></div>';
             type = 'alert alert-success';
@@ -141,8 +129,8 @@ var Popup = (function(my){
         }
 
         var checkResponseErrors = function(json) {
-          if (!json.response) return "Bad response";
-          else if (json.response.error) return json.response.error;
+          if (!json.confidence) return "Bad response";
+          else if (json.error) return json.error;
           else return false;
         }
 
@@ -154,6 +142,7 @@ var Popup = (function(my){
               '&company_name=' + $('#domain').val() +
               '&first_name=' + $('#firstname').val() +
               '&last_name=' + $('#lastname').val();
+              console.log(url);
           sendRequest(url, processMakeResponse);
         });
 
