@@ -118,8 +118,7 @@ var Popup = (function(my){
           }
           else {
             var confidence = json.confidence, email = json.email;
-            content = '<div><span>email: </span><a href="mailto:' + email +'">' + email + '</a></div>';
-            content += '<div><span>Confidence:</span>' + confidence + '</div>';
+            content = '<div><span>Confidence:</span>' + confidence + '</div>';
             content += '<div class="progress">';
             content += '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="' + confidence + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + confidence + '%" "></div></div>';
             type = 'alert alert-success';
