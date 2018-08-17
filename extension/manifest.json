@@ -3,9 +3,9 @@
   "name": "Toofr Helper",
   "short_name": "Toofr Helper",
   "description": "Another way to use Toofr",
-  "version": "0.9",
+  "version": "1.0",
   "icons": {
-    "128": "img/icon128.png"
+    "128": "img/toofr_logo_balls.png"
   },
 
   "background": {
@@ -27,7 +27,7 @@
   ],
 
   "browser_action": {
-    "default_icon": "img/icon128.png",
+    "default_icon": "img/toofr_logo_balls.png",
     "default_title": "",
     "default_popup": "html/popup.html"
   },
@@ -35,6 +35,6 @@
   "options_page": "html/options.html",
 
   "permissions": [
-    "http://toofr.com/*"
+    "https://www.findemails.com/*"
   ]
 }

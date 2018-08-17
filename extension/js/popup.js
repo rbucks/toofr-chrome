@@ -35,7 +35,7 @@ var Popup = (function(my){
 
   // ========================================= Template
   my.template = function(data) {
-    var content = '<div class="navbar navbar-default"><div class="navbar-inner"><img src="/img/toofr_small_white.png" style="padding:6px;"/></div></div>',
+    var content = '<div class="navbar navbar-default"><div class="navbar-inner"><img src="/img/find_emails_logo.png" style="padding:6px;"/></div></div>',
         inputs = ['firstname', 'lastname', 'domain'];
 
     content += '<section><table><tbody>';
@@ -136,7 +136,7 @@ var Popup = (function(my){
         $('#submitMake').click( function(e){
           e.preventDefault();
           if (!checkAPI()) return;
-          var url = 'https://www.toofr.com:443/api/v1/guess_email.json' +
+          var url = 'https://www.findemails.com:443/api/v1/guess_email.json' +
               '?key=' + data.apiKey +
               '&company_name=' + $('#domain').val() +
               '&first_name=' + $('#firstname').val() +
@@ -148,7 +148,7 @@ var Popup = (function(my){
         $('#submitEmail').submit( function(e){
           e.preventDefault();
           if (!checkAPI) return;
-          var url = 'https://www.toofr.com:443/api/v1/test_email.json' +
+          var url = 'https://www.findemails.com:443/api/v1/test_email.json' +
               '?key=' + data.apiKey +
               '&email=' + $('#email').val();
           sendRequest(url, processEmailResponse);
