@@ -39,3 +39,22 @@ td {
   font-weight: bold;
   margin-right: 10px;
 }
+
+#result .prospect-domain {
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+#result .prospect-item {
+  margin-bottom: 10px;
+}
+
+#result .prospect-item span {
+  text-align: left;
+  font-weight: normal;
+  margin-right: 10px;
+}
+
+#result .prospect-item .prospect-email {
+  font-weight: bold;
+}

@@ -1,17 +1,26 @@
 var Popup = (function(my){
 
   var bg = chrome.extension.getBackgroundPage();
-  var linkedinData = {};
   var settings = {};
+  var linkedinData = {};
+  var activeTabDomain = '';
+
 
   my.init = function() {
     window.addEventListener('load', showPopup, false);
   };
 
+
   function showPopup() {
-    updateSettings();
-    updateLinkedinData();
-    renderContent();
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+      var tab = tabs[0];
+      if (tab.url) {
+        activeTabDomain = (new URL(tab.url)).hostname;
+      }
+      updateSettings();
+      updateLinkedinData();
+      renderContent();
+    });
   }
 
   function updateLinkedinData() {
@@ -83,10 +92,10 @@ var Popup = (function(my){
           return true;
         }
 
-        var sendRequest = function(url, processResponse) {
+        var sendRequest = function(method, url, processResponse) {
           $.ajax({
             url: url,
-            method: 'POST',
+            method: method,
             beforeSend: showLoader,
             dataType: 'json'
           }).done( function(response){
@@ -127,6 +136,42 @@ var Popup = (function(my){
           return {type: type, content: content};
         }
 
+
+        var processProspectsResponse = function(json) {
+          var type = '',
+              content = '';
+          if (!json.prospects) {
+            type = 'alert alert-danger';
+            content = 'Bad response';
+          }
+          else {
+            content += '<div class="prospect-domain">Domain: ' + activeTabDomain + '</div>';
+            type = 'alert alert-success';
+            var prospects = json.prospects;
+            for (var i = 0, len = prospects.length; i < len; i++) {
+              var item = prospects[i];
+              try {
+                content += renderProspect(item);
+              } catch (e) {}
+            }
+          }
+          return {type: type, content: content};
+        }
+
+
+        var renderProspect = function(data){
+          var html = [
+            '<div class="prospect-item">',
+              '<span class="prospect-email">' + data.email.email + '</span>',
+              '<span class="prospect-confidence">(confidence: ' + data.email.confidence + ')</span><br/>',
+              data.profile.fn ? '<span class="prospect-name">' + data.profile.fn + '</span>' : '<span class="prospect-name">' + data.first_name + ' ' + data.last_name + '</span>',
+              data.title? '<span class="prospect-title">' + data.title + '</span>' : '',
+            '</div>'
+          ].join('\n');
+          return html;
+        }
+
+
         var checkResponseErrors = function(json) {
           if (!json.confidence) return "Bad response";
           else if (json.error) return json.error;
@@ -141,18 +186,27 @@ var Popup = (function(my){
               '&company_name=' + $('#domain').val() +
               '&first_name=' + $('#firstname').val() +
               '&last_name=' + $('#lastname').val();
-              console.log(url);
-          sendRequest(url, processMakeResponse);
+          sendRequest('POST', url, processMakeResponse);
         });
 
         $('#submitEmail').submit( function(e){
           e.preventDefault();
-          if (!checkAPI) return;
+          if (!checkAPI()) return;
           var url = 'https://www.findemails.com:443/api/v1/test_email.json' +
               '?key=' + data.apiKey +
               '&email=' + $('#email').val();
-          sendRequest(url, processEmailResponse);
+          sendRequest('POST', url, processEmailResponse);
         });
+
+        var getProspectsByDomain = function() {
+          if (!checkAPI()) return;
+          var url = 'https://www.findemails.com/api/v1/get_prospects.json' +
+            '?key=' + data.apiKey +
+            '&company_name=' + activeTabDomain;
+          sendRequest('GET', url, processProspectsResponse);
+        };
+
+        getProspectsByDomain();
 
       });
 
