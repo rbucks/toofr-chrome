@@ -44,10 +44,13 @@ var Popup = (function(my){
 
   // ========================================= Template
   my.template = function(data) {
-    var content = '<div class="navbar navbar-default"><div class="navbar-inner"><img src="/img/find_emails_logo.png" style="padding:6px;"/></div></div>',
-        inputs = ['firstname', 'lastname', 'domain'];
+    var content = '<div class="navbar navbar-default"><div class="navbar-inner"><img src="/img/find_emails_logo.png" style="padding:6px;"/></div></div>';
+    content += '<ul class="nav nav-tabs"><li class="active"><a href="#tab-prospects" data-toggle="tab">Prospects</a></li><li><a href="#tab-query" data-toggle="tab">Query</a></li></ul>';
+    var inputs = ['firstname', 'lastname', 'domain'];
 
-    content += '<section><table><tbody>';
+    content += '<div class="tab-content">';
+    content += '<section id="tab-prospects" class="tab-pane active"><div id="prospects-result"></div></section>';
+    content += '<section id="tab-query" class="tab-pane fade"><table><tbody>';
     content += '<tr><td><form id="submitName">';
     for (var i = 0, len = inputs.length; i < len; i++) {
       var id = inputs[i];
@@ -62,6 +65,7 @@ var Popup = (function(my){
     content += '</tr></tbody></table></section>';
 
     content += '<section><div id="result"></div></section>';
+    content += '</div>';
 
 
     var eventHandlers = [];
@@ -92,13 +96,17 @@ var Popup = (function(my){
           return true;
         }
 
-        var sendRequest = function(method, url, processResponse) {
+        var sendRequest = function(method, url, processResponse, params) {
           $.ajax({
             url: url,
             method: method,
             beforeSend: showLoader,
             dataType: 'json'
           }).done( function(response){
+            if (params && params.customRender) {
+              processResponse(response);
+              return;
+            }
             var result = processResponse(response);
             showResult( result.content, result.type );
           }).fail( function(){
@@ -151,21 +159,66 @@ var Popup = (function(my){
             for (var i = 0, len = prospects.length; i < len; i++) {
               var item = prospects[i];
               try {
-                content += renderProspect(item);
+                var data = getProspectTemplateData(item);
+                content += renderProspect(data);
               } catch (e) {}
             }
           }
-          return {type: type, content: content};
-        }
+          $('#prospects-result').html(content);
+          $('#result').html('');
+          // return {type: type, content: content};
+        };
+
+
+        var getProspectTemplateData = function(item){
+          var data = $.extend({}, item);
+          data.profileImg = item.profile.photo;
+          if (!data.profileImg) data.profileImg = '/img/blank-photo.png';
+          if (!data.title) data.title = item.profile.title;
+          data.fullname = item.profile.fn;
+          if (!data.fullname) data.fullname = data.first_name + ' ' + data.last_name;
+          if (item.confidence_detail) {
+            var names = {
+              check_catchall: "Catchall",
+              check_disposable: "Disposable",
+              check_for_gibberish: "Gibberish",
+              check_for_list: "List",
+              check_for_name: "Name",
+              check_generic: "Uniqueness",
+              check_mailserver: "Mailserver",
+              check_mx_records: "MX records",
+              check_pattern: "Pattern",
+            }
+            data.confidenceDetails = {};
+            for (var key in names) {
+              data.confidenceDetails[ names[key] ] = item.confidence_detail[key];
+            }
+          }
+          return data;
+        };
 
 
         var renderProspect = function(data){
+          var scoreLine = '';
+          for (var key in data.confidenceDetails) {
+            scoreLine += '<span class="prospect-score">' + key + ' score +' + data.confidenceDetails[key] + '</span>';
+          }
           var html = [
             '<div class="prospect-item">',
               '<span class="prospect-email">' + data.email.email + '</span>',
-              '<span class="prospect-confidence">(confidence: ' + data.email.confidence + ')</span><br/>',
-              data.profile.fn ? '<span class="prospect-name">' + data.profile.fn + '</span>' : '<span class="prospect-name">' + data.first_name + ' ' + data.last_name + '</span>',
-              data.title? '<span class="prospect-title">' + data.title + '</span>' : '',
+              '<div class="prospect-score-container">',
+                '<span class="prospect-state">' + data.email.state + '</span>',
+                '<span class="prospect-confidence">' + data.email.confidence + '%</span>',
+                '<span class="prospect-score-line">' + scoreLine + '</span>',
+              '</div>',
+              '<div class="prospect-left-col">',
+                '<img src="' + data.profileImg + '">',
+              '</div>',
+              '<div class="prospect-right-col">',
+                '<div class="prospect-name">' + data.fullname + '</div>',
+                data.title? '<span class="prospect-title">' + data.title + '</span>' : '',
+                data.profile.linkedin_profile ? '<div><a href="' + data.profile.linkedin_profile + '" class="prospect-li-link" target="_blank"></a></div>' : '',
+              '</div>',
             '</div>'
           ].join('\n');
           return html;
@@ -203,7 +256,9 @@ var Popup = (function(my){
           var url = 'https://www.findemails.com/api/v1/get_prospects.json' +
             '?key=' + data.apiKey +
             '&company_name=' + activeTabDomain;
-          sendRequest('GET', url, processProspectsResponse);
+          sendRequest('GET', url, processProspectsResponse, {
+            customRender: true
+          });
         };
 
         getProspectsByDomain();
