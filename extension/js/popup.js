@@ -44,8 +44,8 @@ var Popup = (function(my){
 
   // ========================================= Template
   my.template = function(data) {
-    var content = '<div class="navbar navbar-default"><div class="navbar-inner"><img src="/img/find_emails_logo.png" style="padding:6px;"/></div></div>';
-    content += '<ul class="nav nav-tabs"><li class="active"><a href="#tab-prospects" data-toggle="tab">Prospects</a></li><li><a href="#tab-query" data-toggle="tab">Query</a></li></ul>';
+    var content = '<div class="navbar navbar-light bg-light"><div class="navbar-brand"><img src="/img/find_emails_logo.png" /></div></div>';
+    content += '<ul class="nav nav-tabs"><li class="nav-item"><a href="#tab-prospects" data-toggle="tab" class="nav-link active">Prospects</a></li><li class="nav-item"><a href="#tab-query" data-toggle="tab" class="nav-link">Query</a></li></ul>';
     var inputs = ['firstname', 'lastname', 'domain'];
 
     content += '<div class="tab-content">';

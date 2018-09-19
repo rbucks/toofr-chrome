@@ -11,7 +11,7 @@ function saveOptions() {
     status.innerHTML = "Saved";
     setTimeout(function() {
         status.innerHTML = "";
-    }, 1000);
+    }, 1500);
 }
 
 // Restore from localStorage

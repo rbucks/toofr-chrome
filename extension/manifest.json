@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Toofr Helper",
-  "short_name": "Toofr Helper",
-  "description": "Another way to use Toofr",
+  "name": "FindEmails Extension",
+  "short_name": "FindEmails",
+  "description": "Find emails on any website and use our email finder and email verifier for convenient testing",
   "version": "1.0",
   "icons": {
     "128": "img/toofr_logo_balls.png"
