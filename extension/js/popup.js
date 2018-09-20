@@ -179,7 +179,7 @@ var Popup = (function(my){
         var processProspectsResponse = function(json) {
           var content = '';
           if (!json.prospects || !json.prospects.length) {
-            content = '<div class="text-center no-results"><img src="/img/empty.png"></div>';
+            content = '<div class="text-center no-results"><img src="/img/empty.png"><p class="lead text-mute">Sorry, we came up empty</p></div>';
           }
           else {
             var prospects = json.prospects;
