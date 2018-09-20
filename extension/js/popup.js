@@ -44,28 +44,35 @@ var Popup = (function(my){
 
   // ========================================= Template
   my.template = function(data) {
-    var content = '<div class="navbar navbar-light bg-light"><div class="navbar-brand"><img src="/img/find_emails_logo.png" /></div></div>';
-    content += '<ul class="nav nav-tabs"><li class="nav-item"><a href="#tab-prospects" data-toggle="tab" class="nav-link active">Prospects</a></li><li class="nav-item"><a href="#tab-query" data-toggle="tab" class="nav-link">Query</a></li></ul>';
-    var inputs = ['firstname', 'lastname', 'domain'];
+    var content = '<div class="navbar navbar-light bg-light mb-3"><div class="navbar-brand"><a href="https://www.findemails.com" target="_blank"><img src="/img/find_emails_logo.png" class="d-inline-block align-top" /></a> <span class="small text-muted">' + activeTabDomain + '</span></div><a href="https://www.findemails.com/guess" target="_blank" class="btn btn-outline-dark btn-sm ml-auto">Dashboard <i class="fa fa-external-link-alt"></i></a></div></div>';
+    content += '<div class="container"><ul class="nav nav-tabs"><li class="nav-item"><a href="#tab-prospects" data-toggle="tab" class="nav-link active">Get Prospects</a></li><li class="nav-item"><a href="#tab-query" data-toggle="tab" class="nav-link">Find Emails</a></li><li class="nav-item"><a href="#tab-verify" data-toggle="tab" class="nav-link">Verify Email</a></li></ul>';
 
     content += '<div class="tab-content">';
+    
     content += '<section id="tab-prospects" class="tab-pane active"><div id="prospects-result"></div></section>';
-    content += '<section id="tab-query" class="tab-pane fade"><table><tbody>';
-    content += '<tr><td><form id="submitName">';
-    for (var i = 0, len = inputs.length; i < len; i++) {
-      var id = inputs[i];
-      content += '<div class="form-group"><input id="' + id + '" value="' + (data[id] ? data[id] : '') + '" placeholder="' + id + '"/></div>';
-    }
-    content += '<input type="button" class="btn btn-success" id="submitMake" value="Submit">';
-    content += '</form></td>';
-    content += '<td style="padding-left:30px;"><form id="submitEmail">';
-    content += '<div class="form-group"><input id="email" placeholder="email"/></div>';
-    content += '<button class="btn btn-success">Submit</button>';
-    content += '</form></td>';
-    content += '</tr></tbody></table></section>';
+    
+    content += '<section id="tab-query" class="tab-pane fade">';
+    content += '<form id="submitName" class="mt-3">';
+    content += '<div class="form-row mb-2">';
+    content += '<div class="col"><input class="form-control" id="firstname" value="" placeholder="First Name"></div>';
+    content += '<div class="col"><input class="form-control" id="lastname" value="" placeholder="Last Name"></div>';
+    content += '</div>'
+    content += '<div class="form-row">';
+    content += '<div class="col-md-12"><div class="input-group"><input id="domain" value=' + activeTabDomain + ' placeholder="Company or Domain" class="form-control"><div class="input-group-append"><input type="button" class="btn btn-success" id="submitMake" value="Find Emails"></div></div></div>'
+    content += '</div>'
+    content += '</form>';
+    content += '</section>';
 
+    content += '<section id="tab-verify" class="tab-pane fade">';
+    content += '<form id="submitEmail" class="mt-3">';
+    content += '<div class="form-row">';
+    content += '<div class="col-md-12"><div class="input-group"><input id="email" placeholder="Email Address" class="form-control"><div class="input-group-append"><input type="button" class="btn btn-success" id="submitMake" value="Verify Email"></div></div></div>'
+    content += '</div>'
+    content += '</form>';
+    content += '</section>';
+    
     content += '<section><div id="result"></div></section>';
-    content += '</div>';
+    content += '</div></div>';
 
 
     var eventHandlers = [];
@@ -153,7 +160,6 @@ var Popup = (function(my){
             content = 'Bad response';
           }
           else {
-            content += '<div class="prospect-domain">Domain: ' + activeTabDomain + '</div>';
             type = 'alert alert-success';
             var prospects = json.prospects;
             for (var i = 0, len = prospects.length; i < len; i++) {
@@ -234,7 +240,7 @@ var Popup = (function(my){
         $('#submitMake').click( function(e){
           e.preventDefault();
           if (!checkAPI()) return;
-          var url = 'https://www.findemails.com:443/api/v1/guess_email.json' +
+          var url = 'https://www.findemails.com/api/v1/guess_email.json' +
               '?key=' + data.apiKey +
               '&company_name=' + $('#domain').val() +
               '&first_name=' + $('#firstname').val() +
@@ -245,7 +251,7 @@ var Popup = (function(my){
         $('#submitEmail').submit( function(e){
           e.preventDefault();
           if (!checkAPI()) return;
-          var url = 'https://www.findemails.com:443/api/v1/test_email.json' +
+          var url = 'https://www.findemails.com/api/v1/test_email.json' +
               '?key=' + data.apiKey +
               '&email=' + $('#email').val();
           sendRequest('POST', url, processEmailResponse);
