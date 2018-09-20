@@ -48,9 +48,9 @@ var Popup = (function(my){
     content += '<div class="container"><ul class="nav nav-tabs"><li class="nav-item"><a href="#tab-prospects" data-toggle="tab" class="nav-link active">Get Prospects</a></li><li class="nav-item"><a href="#tab-query" data-toggle="tab" class="nav-link">Find Emails</a></li><li class="nav-item"><a href="#tab-verify" data-toggle="tab" class="nav-link">Verify Email</a></li></ul>';
 
     content += '<div class="tab-content">';
-    
+
     content += '<section id="tab-prospects" class="tab-pane active"><div id="prospects-result"></div></section>';
-    
+
     content += '<section id="tab-query" class="tab-pane fade">';
     content += '<form id="submitName" class="mt-3">';
     content += '<div class="form-row mb-2">';
@@ -58,19 +58,21 @@ var Popup = (function(my){
     content += '<div class="col"><input class="form-control" id="lastname" value="" placeholder="Last Name"></div>';
     content += '</div>'
     content += '<div class="form-row">';
-    content += '<div class="col-md-12"><div class="input-group"><input id="domain" value=' + activeTabDomain + ' placeholder="Company or Domain" class="form-control"><div class="input-group-append"><input type="button" class="btn btn-success" id="submitMake" value="Find Emails"></div></div></div>'
+    content += '<div class="col-md-12"><div class="input-group"><input id="domain" value=' + activeTabDomain + ' placeholder="Company or Domain" class="form-control"><div class="input-group-append"><input type="submit" class="btn btn-success" id="submitGuess" value="Find Emails"></div></div></div>'
     content += '</div>'
     content += '</form>';
+    content += '<div id="guess-result"></div>'
     content += '</section>';
 
     content += '<section id="tab-verify" class="tab-pane fade">';
     content += '<form id="submitEmail" class="mt-3">';
     content += '<div class="form-row">';
-    content += '<div class="col-md-12"><div class="input-group"><input id="email" placeholder="Email Address" class="form-control"><div class="input-group-append"><input type="button" class="btn btn-success" id="submitMake" value="Verify Email"></div></div></div>'
+    content += '<div class="col-md-12"><div class="input-group"><input id="email" placeholder="Email Address" class="form-control"><div class="input-group-append"><input type="submit" class="btn btn-success" id="bnt-submitEmail" value="Verify Email"></div></div></div>'
     content += '</div>'
     content += '</form>';
+    content += '<div id="email-result"></div>'
     content += '</section>';
-    
+
     content += '<section><div id="result"></div></section>';
     content += '</div></div>';
 
@@ -116,88 +118,120 @@ var Popup = (function(my){
             }
             var result = processResponse(response);
             showResult( result.content, result.type );
-          }).fail( function(){
-            showResult('Network error', 'alert alert-info', 2000);
+          }).fail( function(jqxhr){
+            var message = 'Network error';
+            if (jqxhr.responseJSON && jqxhr.responseJSON.message) {
+              message = jqxhr.responseJSON.message;
+            }
+            showResult(message, 'alert alert-info', 2000);
           });
         }
 
-        var processMakeResponse = function(json) {
-            first = Object.keys(json)[0];
-            confidence = json[first].confidence;
-            email = json[first].email;
-            type = 'alert alert-success';
-            content = '';
-            content += '<div><span>email: </span><a href="mailto:' + email +'">' + email + '</a></div>';
-            content += '<div><span>confidence: </span>' + confidence + '</div>';
-            content += '<div class="progress">';
-            content += '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="' + confidence + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + confidence + '%" "></div></div>';
-          return {type: type, content: content};
+
+        var processGuessResponse = function(json) {
+          var first = Object.keys(json)[0];
+          var item = json[first];
+          var res = {};
+          res.email = item;
+          res.confidence_detail = item.detail;
+          if (json.employee) {
+            res.first_name = json.employee.first_name;
+            res.last_name = json.employee.last_name;
+            res.profile = json.employee.profile;
+            if (!res.profile) res.profile = {};
+          }
+          try {
+            var data = getProspectTemplateData(res);
+            var content = renderProspect(data);
+          } catch (e) {
+            console.log(e);
+          }
+          $('#guess-result').html(content);
+          $('#result').html('');
         }
 
+
         var processEmailResponse = function(json) {
-          var type = '',
-              content = '';
-          if ((content = checkResponseErrors(json)) !== false) {
-            type = 'alert alert-danger';
+          var res = {};
+          res.email = {
+            email: json.email,
+            confidence: json.confidence,
+            state: json.state
+          };
+          res.confidence_detail = json.detail;
+          if (json.employee) {
+            res.first_name = json.employee.first_name;
+            res.last_name = json.employee.last_name;
+            res.profile = json.employee.profile;
+            if (!res.profile) res.profile = {};
           }
-          else {
-            var confidence = json.confidence, email = json.email;
-            content = '<div><span>Confidence:</span>' + confidence + '</div>';
-            content += '<div class="progress">';
-            content += '<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="' + confidence + '" aria-valuemin="0" aria-valuemax="100" style="width: ' + confidence + '%" "></div></div>';
-            type = 'alert alert-success';
-            if (!confidence) type = 'alert alert-danger';
+          try {
+            var data = getProspectTemplateData(res);
+            var content = renderProspect(data);
+          } catch (e) {
+            console.log(e);
           }
-          return {type: type, content: content};
+          $('#email-result').html(content);
+          $('#result').html('');
         }
 
 
         var processProspectsResponse = function(json) {
-          var type = '',
-              content = '';
-          if (!json.prospects) {
-            type = 'alert alert-danger';
-            content = 'Bad response';
+          var content = '';
+          if (!json.prospects || !json.prospects.length) {
+            content = '<div class="text-center no-results"><img src="/img/empty.png"></div>';
           }
           else {
-            type = 'alert alert-success';
             var prospects = json.prospects;
             for (var i = 0, len = prospects.length; i < len; i++) {
               var item = prospects[i];
               try {
                 var data = getProspectTemplateData(item);
                 content += renderProspect(data);
-              } catch (e) {}
+              } catch (e) {
+                console.log(e);
+              }
             }
           }
           $('#prospects-result').html(content);
           $('#result').html('');
-          // return {type: type, content: content};
         };
 
 
         var getProspectTemplateData = function(item){
           var data = $.extend({}, item);
-          data.profileImg = item.profile.photo;
+          var profile = item.profile;
+          if (!profile) profile = {};
+          data.profile = profile;
+          data.profileImg = profile.photo;
           if (!data.profileImg) data.profileImg = '/img/blank-photo.png';
-          if (!data.title) data.title = item.profile.title;
-          data.fullname = item.profile.fn;
+          if (!data.title) data.title = profile.title;
+          data.fullname = profile.fn;
           if (!data.fullname) data.fullname = data.first_name + ' ' + data.last_name;
+          if (!data.first_name && !data.last_name) data.fullname = '';
           if (item.confidence_detail) {
-            var names = {
-              check_catchall: "Catchall",
-              check_disposable: "Disposable",
-              check_for_gibberish: "Gibberish",
-              check_for_list: "List",
-              check_for_name: "Name",
-              check_generic: "Uniqueness",
-              check_mailserver: "Mailserver",
-              check_mx_records: "MX records",
-              check_pattern: "Pattern",
-            }
             data.confidenceDetails = {};
-            for (var key in names) {
-              data.confidenceDetails[ names[key] ] = item.confidence_detail[key];
+            if (!item.confidence_detail.length) {
+              var names = {
+                check_catchall: "Catchall",
+                check_disposable: "Disposable",
+                check_for_gibberish: "Gibberish",
+                check_for_list: "List",
+                check_for_name: "Name",
+                check_generic: "Uniqueness",
+                check_mailserver: "Mailserver",
+                check_mx_records: "MX records",
+                check_pattern: "Pattern",
+              }
+              for (var key in names) {
+                data.confidenceDetails[ names[key] ] = item.confidence_detail[key];
+              }
+            }
+            else {
+              for (var i = 0, len = item.confidence_detail.length; i < len; i++) {
+                var detail = item.confidence_detail[i];
+                data.confidenceDetails[detail.description] = detail.response.replace('+', '');
+              }
             }
           }
           return data;
@@ -237,7 +271,7 @@ var Popup = (function(my){
           else return false;
         }
 
-        $('#submitMake').click( function(e){
+        $('#submitGuess').click( function(e){
           e.preventDefault();
           if (!checkAPI()) return;
           var url = 'https://www.findemails.com/api/v1/guess_email.json' +
@@ -245,7 +279,9 @@ var Popup = (function(my){
               '&company_name=' + $('#domain').val() +
               '&first_name=' + $('#firstname').val() +
               '&last_name=' + $('#lastname').val();
-          sendRequest('POST', url, processMakeResponse);
+          sendRequest('POST', url, processGuessResponse, {
+            customRender: true
+          });
         });
 
         $('#submitEmail').submit( function(e){
@@ -254,7 +290,9 @@ var Popup = (function(my){
           var url = 'https://www.findemails.com/api/v1/test_email.json' +
               '?key=' + data.apiKey +
               '&email=' + $('#email').val();
-          sendRequest('POST', url, processEmailResponse);
+          sendRequest('POST', url, processEmailResponse, {
+            customRender: true
+          });
         });
 
         var getProspectsByDomain = function() {

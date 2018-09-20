@@ -67,9 +67,19 @@ td {
   margin-right: 10px;
 }
 
+#guess-result, #email-result {
+  margin-top: 15px;
+}
+
 /**
  * Prospects
  */
+
+.no-results img {
+  margin-top: 15px;
+  width: 60px;
+  height: 60px;
+}
 
 .prospect-left-col {
   position: absolute;
