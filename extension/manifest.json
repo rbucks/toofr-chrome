@@ -3,7 +3,7 @@
   "name": "FindEmails Extension",
   "short_name": "FindEmails",
   "description": "Find emails on any website and use our email finder and email verifier for convenient testing",
-  "version": "2.0",
+  "version": "2.02",
   "icons": {
     "128": "img/toofr_logo_balls.png"
   },
