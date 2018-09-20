@@ -129,8 +129,15 @@ var Popup = (function(my){
 
 
         var processGuessResponse = function(json) {
-          var first = Object.keys(json)[0];
-          var item = json[first];
+          var maxConfidence = -1;
+          var item;
+          for (var key in json) {
+            if (key === 'employee') continue;
+            if (json[key].confidence > maxConfidence) {
+              item = json[key];
+              maxConfidence = json[key].confidence;
+            }
+          }
           var res = {};
           res.email = item;
           res.confidence_detail = item.detail;
