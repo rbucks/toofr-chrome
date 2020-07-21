@@ -45,13 +45,11 @@ var Popup = (function(my){
   // ========================================= Template
   my.template = function(data) {
     var content = '<div class="navbar navbar-light bg-light mb-3"><div class="navbar-brand"><a href="https://www.findemails.com" target="_blank"><img src="/img/find_emails_logo.png" class="d-inline-block align-top" /></a> <span class="small text-muted">' + activeTabDomain + '</span></div><a href="https://www.findemails.com/guess" target="_blank" class="btn btn-outline-dark btn-sm ml-auto">Dashboard <i class="fa fa-external-link-alt"></i></a></div></div>';
-    content += '<div class="container"><ul class="nav nav-tabs"><li class="nav-item"><a href="#tab-prospects" data-toggle="tab" class="nav-link active">Get Prospects</a></li><li class="nav-item"><a href="#tab-query" data-toggle="tab" class="nav-link">Find Emails</a></li><li class="nav-item"><a href="#tab-verify" data-toggle="tab" class="nav-link">Verify Email</a></li></ul>';
+    content += '<div class="container"><ul class="nav nav-tabs"><li class="nav-item"><a href="#tab-query" data-toggle="tab" class="nav-link active">Find Emails</a></li><li class="nav-item"><a href="#tab-verify" data-toggle="tab" class="nav-link">Verify Email</a></li><li class="nav-item"><a href="#tab-prospects" data-toggle="tab" class="nav-link">Get Prospects</a></li></ul>';
 
     content += '<div class="tab-content">';
 
-    content += '<section id="tab-prospects" class="tab-pane active"><div id="prospects-result"></div></section>';
-
-    content += '<section id="tab-query" class="tab-pane fade">';
+    content += '<section id="tab-query" class="tab-pane active">';
     content += '<form id="submitName" class="mt-3">';
     content += '<div class="form-row mb-2">';
     content += '<div class="col"><input class="form-control" id="firstname" value="" placeholder="First Name"></div>';
@@ -72,6 +70,8 @@ var Popup = (function(my){
     content += '</form>';
     content += '<div id="email-result"></div>'
     content += '</section>';
+
+    content += '<section id="tab-prospects" class="tab-pane fade"><div id="prospects-result"></div></section>';
 
     content += '<section><div id="result"></div></section>';
     content += '</div></div>';
